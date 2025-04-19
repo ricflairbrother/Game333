@@ -13,12 +13,16 @@ public class playerMovement : MonoBehaviour
     private bool isGrounded = true;
     public ParticleSystem speedEffects;
 
-
-    public CollectableManager cm;
+    Animator animator;
 
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
 
     // Update is called once per frame
     void Update()
@@ -28,17 +32,14 @@ public class playerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded == true)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            isGrounded = false;
+            animator.SetBool("isJumping", !isGrounded);
         }
-
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-        }
-
+        
         Flip();
     }
 
-    void StartSpeedBoost(float multiplier)
+    public void StartSpeedBoost(float multiplier)
     {
         StartCoroutine(SpeedBoostCoroutine(multiplier));
     }
@@ -46,33 +47,25 @@ public class playerMovement : MonoBehaviour
     private IEnumerator SpeedBoostCoroutine(float multiplier)
     {
         speedMultiplier = multiplier;
+        animator.SetBool("isSprinting", true);
         speedEffects.Play();
         yield return new WaitForSeconds(5f);
         speedMultiplier = 1f;
+        animator.SetBool("isSprinting", false);
         speedEffects.Stop();
     }
 
     private void FixedUpdate()
     {
         rb.velocity = new Vector2(horizontal * speed * speedMultiplier, rb.velocity.y);
+        animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
+        animator.SetFloat("Jump", rb.velocity.y);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Set isGrounded to true when colliding with ground objects
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        // Set isGrounded to false when leaving ground objects
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
+        isGrounded = true;
+        animator.SetBool("isJumping", !isGrounded);
     }
 
     private void Flip()
@@ -85,21 +78,6 @@ public class playerMovement : MonoBehaviour
             localScale.x *= -1f;
             transform.localScale = localScale;
             speedEffects.transform.localScale = localScale;
-        }
-    }
-    
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Collectable"))
-        {
-            Destroy(other.gameObject);
-            cm.collectableCount++;
-        }
-        else if (other.gameObject.CompareTag("Powerup One"))
-        {
-            Destroy(other.gameObject);
-            StartSpeedBoost(2);
-            cm.collectableCount += 2;
         }
     }
 }
