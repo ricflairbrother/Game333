@@ -1,83 +1,179 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class playerMovement : MonoBehaviour
 {
-    private float horizontal;
-    private float speed = 8f;
-    float speedMultiplier = 1f;
-    private float jumpingPower = 18f;
-    private bool isFacingRight = true;
-    public bool projectileRight = true;
-    private bool isGrounded = true;
-    public ParticleSystem speedEffects;
+    public Rigidbody2D rb;
+    public float speed = 5f;
+    float horizontalMovement;
+    bool isFacingRight = true;
 
-    Animator animator;
+    public float jumpForce = 10f;
+    public int jumpAmt = 1;
+    int jumpsRemain;
 
-    [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
+    public float gravity = 2f;
+    public float fallSpeedMax = 18f;
+    public float fallSpeedMult = 2f;
+
+    public Transform groundCheckPos;
+    public Vector2 groundCheckSize = new Vector2(0.5f, 0.05f);
+    public LayerMask groundLayer;
+    bool isGrounded;
+
+    public Transform wallCheckPos;
+    public Vector2 wallCheckSize = new Vector2(0.5f, 0.05f);
+    public LayerMask wallLayer;
+    public float wallSlideSpeed = 2;
+    bool isWallSliding;
+
+    bool isWallJumping;
+    float wallJumpDirection;
+    float wallJumpTime = 0.5f;
+    float wallJumpTimer;
+    public Vector2 wallJumpPower = new Vector2(5f, 10f);
 
     void Start()
     {
-        animator = GetComponent<Animator>();
+
     }
 
-    // Update is called once per frame
     void Update()
     {
-        horizontal = Input.GetAxisRaw("Horizontal");
+        GroundCheck();
+        Gravity();
+        WallSlide();
+        WallJump();
 
-        if (Input.GetButtonDown("Jump") && isGrounded == true)
+        if(!isWallJumping)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            isGrounded = false;
-            animator.SetBool("isJumping", !isGrounded);
+            rb.velocity = new Vector2(horizontalMovement * speed, rb.velocity.y);
+            Flip();
         }
-        
-        Flip();
     }
 
-    public void StartSpeedBoost(float multiplier)
+    public void Move(InputAction.CallbackContext context)
     {
-        StartCoroutine(SpeedBoostCoroutine(multiplier));
+        horizontalMovement = context.ReadValue<Vector2>().x;
     }
 
-    private IEnumerator SpeedBoostCoroutine(float multiplier)
+    public void Jump(InputAction.CallbackContext context)
     {
-        speedMultiplier = multiplier;
-        animator.SetBool("isSprinting", true);
-        speedEffects.Play();
-        yield return new WaitForSeconds(5f);
-        speedMultiplier = 1f;
-        animator.SetBool("isSprinting", false);
-        speedEffects.Stop();
+        if(jumpsRemain > 0)
+        {
+            if(context.performed)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                jumpsRemain--;
+            }
+            else if(context.canceled)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+                jumpsRemain--;
+            }
+        }
+
+        if(context.performed && wallJumpTimer > 0f)
+        {
+            isWallJumping = true;
+            rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y);
+            wallJumpTimer = 0;
+
+            if(transform.localScale.x != wallJumpDirection)
+            {
+                isFacingRight = !isFacingRight;
+                Vector3 ls = transform.localScale;
+                ls.x *= -1f;
+                transform.localScale = ls;
+            }
+
+            Invoke(nameof(CancelWallJump), wallJumpTime + 0.1f);
+        }
     }
 
-    private void FixedUpdate()
+    private void Gravity()
     {
-        rb.velocity = new Vector2(horizontal * speed * speedMultiplier, rb.velocity.y);
-        animator.SetFloat("Speed", Mathf.Abs(rb.velocity.x));
-        animator.SetFloat("Jump", rb.velocity.y);
+        if(rb.velocity.y < 0)
+        {
+            rb.gravityScale = gravity * fallSpeedMult;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -fallSpeedMax));
+        }
+        else
+        {
+            rb.gravityScale = gravity;
+        }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private bool WallCheck()
     {
-        isGrounded = true;
-        animator.SetBool("isJumping", !isGrounded);
+        return Physics2D.OverlapBox(wallCheckPos.position, wallCheckSize, 0, wallLayer);
+    }
+
+    private void WallSlide()
+    {
+        if(!isGrounded & WallCheck() & horizontalMovement != 0)
+        {
+            isWallSliding = true;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed));
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+    }
+
+    private void WallJump()
+    {
+        if(isWallSliding)
+        {
+            isWallJumping = false;
+            wallJumpDirection = -transform.localScale.x;
+            wallJumpTimer = wallJumpTime;
+
+            CancelInvoke(nameof(CancelWallJump));
+        }
+        else if(wallJumpTimer > 0f)
+        {
+            wallJumpTimer -= Time.deltaTime;
+        }
+    }
+
+    private void CancelWallJump()
+    {
+        isWallJumping = false;
     }
 
     private void Flip()
     {
-        if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
+        if(isFacingRight && horizontalMovement < 0 || !isFacingRight && horizontalMovement > 0)
         {
             isFacingRight = !isFacingRight;
-            projectileRight = false;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
-            speedEffects.transform.localScale = localScale;
+            Vector3 ls = transform.localScale;
+            ls.x *= -1f;
+            transform.localScale = ls;
         }
+    }
+
+    private void GroundCheck()
+    {
+        if(Physics2D.OverlapBox(groundCheckPos.position, groundCheckSize, 0, groundLayer))
+        {
+            jumpsRemain = jumpAmt;
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded = false;
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.white;
+        Gizmos.DrawCube(groundCheckPos.position, groundCheckSize);
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(wallCheckPos.position, wallCheckSize);
     }
 }
