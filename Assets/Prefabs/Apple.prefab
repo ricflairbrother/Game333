@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7495324749718993435
+--- !u!1 &6939927287830354134
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,43 +8,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2515898553135415530}
-  - component: {fileID: 3726214708098087303}
-  - component: {fileID: 1277914796544072561}
-  - component: {fileID: 7567276593476613621}
+  - component: {fileID: 6602298178388309480}
+  - component: {fileID: 7260003446657646413}
+  - component: {fileID: 3585261800008232761}
+  - component: {fileID: 8165068406311908996}
+  - component: {fileID: 4522576165315753609}
   m_Layer: 0
-  m_Name: Collectable
-  m_TagString: Collectable
+  m_Name: Apple
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2515898553135415530
+--- !u!4 &6602298178388309480
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7495324749718993435}
+  m_GameObject: {fileID: 6939927287830354134}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.6794376, y: 5.8716645, z: -3.4016168}
-  m_LocalScale: {x: 2.1279137, y: 2.1279137, z: 2.1279137}
+  m_LocalPosition: {x: 8.344, y: 6.005, z: -1.0196782}
+  m_LocalScale: {x: 2.6794, y: 2.6794, z: 2.6794}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &3726214708098087303
+--- !u!95 &7260003446657646413
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7495324749718993435}
+  m_GameObject: {fileID: 6939927287830354134}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5ec5746e44cb8d4419ea0ca1562c40fc, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6cc439dd144cb354ebbfa28e827d7494, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -55,13 +56,13 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!212 &1277914796544072561
+--- !u!212 &3585261800008232761
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7495324749718993435}
+  m_GameObject: {fileID: 6939927287830354134}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -96,7 +97,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7293598183456022363, guid: 1ddc9afd21fec77489b1248d18f31b68, type: 3}
+  m_Sprite: {fileID: 7293598183456022363, guid: bbc67d1386c0c0d4cbf14ce3adf58b96, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -107,13 +108,13 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!58 &7567276593476613621
+--- !u!58 &8165068406311908996
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7495324749718993435}
+  m_GameObject: {fileID: 6939927287830354134}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -139,6 +140,19 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.002837834, y: 0}
+  m_Offset: {x: -0.0028657569, y: 0.009552582}
   serializedVersion: 2
-  m_Radius: 0.06351267
+  m_Radius: 0.06542923
+--- !u!114 &4522576165315753609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6939927287830354134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d587961b6ad16804595dd95a11131ca9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worth: 5
