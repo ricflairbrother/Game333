@@ -83,11 +83,11 @@ public class playerMovement : MonoBehaviour
             }
         }
 
-        if(context.performed && wallJumpTimer > 0f)
+        if(context.performed && isWallSliding)
         {
             isWallJumping = true;
+            isWallSliding = false;
             rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y);
-            wallJumpTimer = 0;
             animator.SetTrigger("Jump");
 
             if(transform.localScale.x != wallJumpDirection)
