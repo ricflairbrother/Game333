@@ -6,7 +6,7 @@ public class EnemyPebbleScript : MonoBehaviour
 {
     private GameObject player;
     private Rigidbody2D rb;
-    public float force;
+    public float force = 2f;
     private float timer;
     // Start is called before the first frame update
     void Start()

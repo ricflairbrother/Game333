@@ -6,6 +6,7 @@ public class EnemyFire : MonoBehaviour
 {
     public GameObject rock;
     public Transform rockPos;
+    public Animator animator;
 
     private float timer;
     private GameObject player;
@@ -24,11 +25,17 @@ public class EnemyFire : MonoBehaviour
         if(distance < 10)
         {
             timer += Time.deltaTime;
-            if(timer > 2)
+            animator.SetTrigger("Throw");
+            if (timer > 2)
             {
                 timer = 0;
                 Fire();
+                animator.SetTrigger("NotThrow");
             }
+        }
+        if (distance > 10)
+        {
+            animator.SetTrigger("NotThrow");
         }
     }
 
