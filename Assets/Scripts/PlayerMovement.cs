@@ -97,8 +97,8 @@ public class playerMovement : MonoBehaviour
                 ls.x *= -1f;
                 transform.localScale = ls;
             }
-
             Invoke(nameof(CancelWallJump), wallJumpTime + 0.1f);
+            
         }
     }
 
