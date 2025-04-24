@@ -9,6 +9,9 @@ public class PlayerHealth : MonoBehaviour
     public float currentHealth;
     public float maxHealth;
     public Image healthBar;
+    public float currentShield;
+    public float maxShield;
+    public Image shieldBar;
 
     [SerializeField] private float iFrameDuration;
     [SerializeField] private int numberOfFlashes = 3;
@@ -22,6 +25,9 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         ResetHealth();
+        maxShield = 100;
+        currentShield = 0;
+        shieldBar.fillAmount = currentShield;
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         GameController.OnRestart += ResetHealth;
@@ -31,6 +37,7 @@ public class PlayerHealth : MonoBehaviour
     void Update()
     {
         healthBar.fillAmount = Mathf.Clamp(currentHealth / maxHealth, 0, 100);
+        shieldBar.fillAmount = Mathf.Clamp(currentShield / maxShield, 0, 25);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -42,6 +49,17 @@ public class PlayerHealth : MonoBehaviour
         else if(collision.gameObject.CompareTag("Projectile"))
         {
             TakeDamage(25);
+        }
+        else if(collision.gameObject.CompareTag("Health Item"))
+        {
+            if(currentHealth >= 100)
+            {
+                GainShield(25);
+            }
+            else if(currentHealth < 100)
+            {
+                GainHealth(25);
+            }
         }
     }
 
@@ -64,6 +82,16 @@ public class PlayerHealth : MonoBehaviour
         {
             StartCoroutine(FlashRed());
         }
+    }
+
+    private void GainHealth(int gainedHealth)
+    {
+        currentHealth += gainedHealth;
+    }
+
+    private void GainShield(int gainedShield)
+    {
+        currentShield += gainedShield;
     }
 
     private IEnumerator FlashRed()

@@ -12,6 +12,13 @@ public class playerMovement : MonoBehaviour
     float horizontalMovement;
     bool isFacingRight = true;
 
+    public bool canDash;
+    public bool isDashing;
+    public float dashSpeed = 20f;
+    public float dashDuration = 1f;
+    public float dashCooldown = 3f;
+    TrailRenderer trailRenderer;
+
     public float jumpForce = 10f;
     public int jumpAmt = 1;
     int jumpsRemain;
@@ -39,11 +46,19 @@ public class playerMovement : MonoBehaviour
 
     void Start()
     {
-
+        canDash = true;
+        trailRenderer = GetComponent<TrailRenderer>();
     }
 
     void Update()
     {
+        animator.SetFloat("yVelocity", rb.velocity.y);
+        animator.SetFloat("Magnitude", rb.velocity.magnitude);
+        animator.SetBool("isWallSliding", isWallSliding);
+        if(isDashing)
+        {
+            return;
+        }
         GroundCheck();
         Gravity();
         WallSlide();
@@ -54,15 +69,40 @@ public class playerMovement : MonoBehaviour
             rb.velocity = new Vector2(horizontalMovement * speed, rb.velocity.y);
             Flip();
         }
-
-        animator.SetFloat("yVelocity", rb.velocity.y);
-        animator.SetFloat("Magnitude", rb.velocity.magnitude);
-        animator.SetBool("isWallSliding", isWallSliding);
     }
 
     public void Move(InputAction.CallbackContext context)
     {
         horizontalMovement = context.ReadValue<Vector2>().x;
+    }
+
+    public void Dash(InputAction.CallbackContext context)
+    {
+        if(context.performed && canDash)
+        {
+            StartCoroutine(DashCoroutine());
+        }
+    }
+
+    private IEnumerator DashCoroutine()
+    {
+        canDash = false;
+        isDashing = true;
+
+        trailRenderer.emitting = true;
+        float dashDirection = isFacingRight ? 1f : -1f;
+
+        rb.velocity = new Vector2(dashDirection * dashSpeed, rb.velocity.y);
+
+        yield return new WaitForSeconds(dashDuration);
+
+        rb.velocity = new Vector2(0f, rb.velocity.y);
+
+        isDashing = false;
+        trailRenderer.emitting = false;
+
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
     public void Jump(InputAction.CallbackContext context)

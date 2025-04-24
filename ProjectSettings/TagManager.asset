@@ -12,6 +12,7 @@ TagManager:
   - Collectable
   - Powerup One
   - Powerup Two
+  - Health Item
   layers:
   - Default
   - TransparentFX
