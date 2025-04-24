@@ -38,5 +38,9 @@ public class EnemyPebbleScript : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        if (collision.gameObject.CompareTag("ProjectileFriendly"))
+        {
+            Destroy(gameObject);
+        }
     }
 }

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -3990700843621641112}
   m_Layer: 0
   m_Name: PF Village Props - Flower 02
-  m_TagString: Untagged
+  m_TagString: ProjectileFriendly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -46,7 +46,7 @@ public class playerMovement : MonoBehaviour
 
     void Start()
     {
-        canDash = true;
+        canDash = false;
         trailRenderer = GetComponent<TrailRenderer>();
     }
 
@@ -102,7 +102,6 @@ public class playerMovement : MonoBehaviour
         trailRenderer.emitting = false;
 
         yield return new WaitForSeconds(dashCooldown);
-        canDash = true;
     }
 
     public void Jump(InputAction.CallbackContext context)

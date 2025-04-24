@@ -25,7 +25,7 @@ public class EnemyFire : MonoBehaviour
         {
             timer += Time.deltaTime;
             animator.SetTrigger("Throw");
-            if (timer > 2)
+            if (timer > 1)
             {
                 timer = 0;
                 Fire();
