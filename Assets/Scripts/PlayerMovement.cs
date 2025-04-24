@@ -28,14 +28,14 @@ public class playerMovement : MonoBehaviour
     public Transform wallCheckPos;
     public Vector2 wallCheckSize = new Vector2(0.5f, 0.05f);
     public LayerMask wallLayer;
-    public float wallSlideSpeed = 2;
+    public float wallSlideSpeed = 2f;
     bool isWallSliding;
 
     bool isWallJumping;
     float wallJumpDirection;
     float wallJumpTime = 0.5f;
     float wallJumpTimer;
-    public Vector2 wallJumpPower = new Vector2(5f, 10f);
+    public Vector2 wallJumpPower = new Vector2(100f, 10f);
 
     void Start()
     {

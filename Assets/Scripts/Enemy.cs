@@ -4,60 +4,38 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public Transform player;
-    public float chaseSpeed = 2f;
-    public float jumpForce = 1f;
-    public LayerMask groundLayer;
-
-    public Rigidbody2D rb;
-    private bool isGrounded;
-    private bool shouldJump;
+    public int maxHealth = 3;
+    private int currentHealth;
+    private SpriteRenderer spriteRenderer;
+    private Color normalColor;
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        currentHealth = maxHealth;
+        normalColor = spriteRenderer.color;
     }
 
     // Update is called once per frame
-    void Update()
+    public void TakeDamage(int damage)
     {
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 1f, groundLayer);
-
-        float direction = Mathf.Sign(player.position.x - transform.position.x);
-
-        bool isPlayerAbove = Physics2D.Raycast(transform.position, Vector2.up, 3f, 1 << player.gameObject.layer);
-
-        if(isGrounded)
+        currentHealth -= damage;
+        StartCoroutine(FlashRed());
+        if(currentHealth <= 0)
         {
-            rb.velocity = new Vector2(direction * chaseSpeed, rb.velocity.y);
-
-            RaycastHit2D groundInFront = Physics2D.Raycast(transform.position, new Vector2(direction, 0), 2f, groundLayer);
-
-            RaycastHit2D gapAhead = Physics2D.Raycast(transform.position + new Vector3(direction, 0, 0), Vector2.down, 2f, groundLayer);
-
-            RaycastHit2D platformAbove = Physics2D.Raycast(transform.position, Vector2.up, 3f, groundLayer);
-
-            if(!groundInFront.collider && !gapAhead.collider)
-            {
-                shouldJump = true;
-            }
-            else if(isPlayerAbove && platformAbove.collider)
-            {
-                shouldJump = true;
-            }
+            enemyDie();
         }
     }
 
-    private void FixedUpdate()
+    private IEnumerator FlashRed()
     {
-        if(isGrounded && shouldJump)
-        {
-            shouldJump = false;
-            Vector2 direction = (player.position - transform.position).normalized;
+        spriteRenderer.color = Color.red;
+        yield return new WaitForSeconds(0.2f);
+        spriteRenderer.color = normalColor;
+    }
 
-            Vector2 jumpDirection = direction * jumpForce;
-
-            rb.AddForce(new Vector2(jumpDirection.x, jumpForce), ForceMode2D.Impulse);
-        }
+    void enemyDie()
+    {
+        Destroy(gameObject);
     }
 }
