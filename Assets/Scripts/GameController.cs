@@ -12,10 +12,13 @@ public class GameController : MonoBehaviour
     public Slider progressSlider;
 
     public GameObject player;
+    public Rigidbody2D playerRb;
     public GameObject gameOverScreen;
     public GameObject loadCanvas;
-    public List<GameObject> levels;
-    public int currentLevelIndex = 0;
+    public List<GameObject> checkpoints;
+    public int currentCheckpointIndex;
+
+    Vector2 checkpointPos;
 
     public static event Action OnRestart; 
     // Start is called before the first frame update
@@ -23,23 +26,26 @@ public class GameController : MonoBehaviour
     {
         gameOverScreen.SetActive(false);
         loadCanvas.SetActive(true);
+        currentCheckpointIndex = SceneTransition.checkpointNum;
+        checkpointPos = checkpoints[currentCheckpointIndex].transform.position;
+        player.transform.position = new Vector3(checkpointPos.x, checkpointPos.y, 0);
+        playerRb = GetComponent<Rigidbody2D>();
         progress = 0;
         Fruit.OnFruitCollect += IncreaseProgressAmount;
-        PlayerHealth.OnPlayerDied += GameOverScreen;
-    }
-
-    void GameOverScreen()
-    {
-        SceneManager.LoadScene(1);
     }
 
     public void RestartGame()
     {
         gameOverScreen.SetActive(false);
         OnRestart.Invoke();
-        LoadLevel(0);
         Time.timeScale = 1;
     }
+
+    public void GameOverScreen()
+    {
+        SceneManager.LoadScene("GameOver");
+    }
+
 
     void IncreaseProgressAmount(int amount)
     {
@@ -51,21 +57,9 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void LoadLevel(int level)
+    public void UpdateCheckpoint(Vector2 pos)
     {
-        levels[currentLevelIndex].gameObject.SetActive(false);
-        levels[level].gameObject.SetActive(true);
-
-        player.transform.position = new Vector3(4, 6, 0);
-
-        currentLevelIndex = level;
-        progress = 0;
-        progressSlider.value = 0;
-    }
-
-    void LoadNextLevel()
-    {
-        int nextLevelIndex = (currentLevelIndex == levels.Count - 1) ? 0 : currentLevelIndex + 1;
-        LoadLevel(nextLevelIndex);
+        checkpointPos = pos;
+        Debug.Log("nice");
     }
 }

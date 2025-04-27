@@ -4,41 +4,63 @@ using UnityEngine;
 
 public class PlatformMoving : MonoBehaviour
 {
-    public Transform pointA;
-    public Transform pointB;
-    public float moveSpeed = 2f;
+    public Transform pointA, pointB;
+    public float speed;
+    Vector3 targetPos;
 
-    private Vector3 nextPosition;
-    // Start is called before the first frame update
+    PlayerMovement playerMovement;
+    Rigidbody2D rb;
+    Vector3 moveDirection;
+
+    private void Awake()
+    {
+        playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        rb = GetComponent<Rigidbody2D>();
+    }
+
     void Start()
     {
-        nextPosition = pointB.position;
+        targetPos = pointB.position;
+        CalculateDirection();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        transform.position = Vector3.MoveTowards(transform.position, nextPosition, moveSpeed * Time.deltaTime);
-
-        if(transform.position == nextPosition)
+        if(Vector2.Distance(transform.position, pointA.position) < 0.05f)
         {
-            nextPosition = (nextPosition == pointA.position) ? pointB.position : pointA.position;
+            targetPos = pointB.position;
+            CalculateDirection();
+        }
+        if(Vector2.Distance(transform.position, pointB.position) < 0.05f)
+        {
+            targetPos = pointA.position;
+            CalculateDirection();
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void FixedUpdate()
     {
-        if(collision.gameObject.CompareTag("Player"))
+        rb.velocity = moveDirection * speed;
+    }
+
+    void CalculateDirection()
+    {
+        moveDirection = (targetPos - transform.position).normalized;
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.CompareTag("Player"))
         {
-            collision.gameObject.transform.parent = transform;
+            playerMovement.isPlatform = true;
+            playerMovement.platformRb = rb;
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        if(collision.gameObject.CompareTag("Player"))
+        if(collision.CompareTag("Player"))
         {
-            collision.gameObject.transform.parent = null;
+            playerMovement.isPlatform = false;
         }
     }
 }

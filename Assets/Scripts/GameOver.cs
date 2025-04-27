@@ -20,6 +20,6 @@ public class NewBehaviourScript : MonoBehaviour
     private IEnumerator GameRestart()
     {
         yield return new WaitForSeconds(5);
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("SampleScene");
     }
 }

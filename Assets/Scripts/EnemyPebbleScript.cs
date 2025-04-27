@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyPebbleScript : MonoBehaviour
 {
     private GameObject player;
+    public PlayerHealth playerHealth;
     private Rigidbody2D rb;
     public float force = 2f;
     private float timer;

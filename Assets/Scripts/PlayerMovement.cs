@@ -3,21 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class playerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     public Rigidbody2D rb;
     public Animator animator;
 
+    TrailRenderer trailRenderer;
+
     public float speed = 5f;
     float horizontalMovement;
     bool isFacingRight = true;
-
-    public bool canDash;
-    public bool isDashing;
-    public float dashSpeed = 20f;
-    public float dashDuration = 1f;
-    public float dashCooldown = 3f;
-    TrailRenderer trailRenderer;
 
     public float jumpForce = 10f;
     public int jumpAmt = 1;
@@ -40,33 +35,38 @@ public class playerMovement : MonoBehaviour
 
     bool isWallJumping;
     float wallJumpDirection;
-    float wallJumpTime = 0.5f;
+    float wallJumpTime = 2f;
     float wallJumpTimer;
     public Vector2 wallJumpPower = new Vector2(100f, 10f);
 
+    public bool isPlatform = false;
+    public Rigidbody2D platformRb;
+
     void Start()
     {
-        canDash = false;
         trailRenderer = GetComponent<TrailRenderer>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         animator.SetFloat("yVelocity", rb.velocity.y);
         animator.SetFloat("Magnitude", rb.velocity.magnitude);
         animator.SetBool("isWallSliding", isWallSliding);
-        if(isDashing)
-        {
-            return;
-        }
+        animator.SetBool("isGrounded", isGrounded);
         GroundCheck();
         Gravity();
         WallSlide();
         WallJump();
 
-        if(!isWallJumping)
+        if(!isWallJumping && !isPlatform)
         {
             rb.velocity = new Vector2(horizontalMovement * speed, rb.velocity.y);
+            Flip();
+        }
+
+        else if(!isWallJumping && isPlatform)
+        {
+            rb.velocity = new Vector2((horizontalMovement * speed) + platformRb.velocity.x, rb.velocity.y);
             Flip();
         }
     }
@@ -74,34 +74,6 @@ public class playerMovement : MonoBehaviour
     public void Move(InputAction.CallbackContext context)
     {
         horizontalMovement = context.ReadValue<Vector2>().x;
-    }
-
-    public void Dash(InputAction.CallbackContext context)
-    {
-        if(context.performed && canDash)
-        {
-            StartCoroutine(DashCoroutine());
-        }
-    }
-
-    private IEnumerator DashCoroutine()
-    {
-        canDash = false;
-        isDashing = true;
-
-        trailRenderer.emitting = true;
-        float dashDirection = isFacingRight ? 1f : -1f;
-
-        rb.velocity = new Vector2(dashDirection * dashSpeed, rb.velocity.y);
-
-        yield return new WaitForSeconds(dashDuration);
-
-        rb.velocity = new Vector2(0f, rb.velocity.y);
-
-        isDashing = false;
-        trailRenderer.emitting = false;
-
-        yield return new WaitForSeconds(dashCooldown);
     }
 
     public void Jump(InputAction.CallbackContext context)
@@ -113,6 +85,7 @@ public class playerMovement : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 jumpsRemain--;
                 animator.SetTrigger("Jump");
+                CancelWallJump();
             }
             else if(context.canceled)
             {
@@ -126,6 +99,7 @@ public class playerMovement : MonoBehaviour
         {
             isWallJumping = true;
             isWallSliding = false;
+            jumpsRemain = jumpAmt;
             rb.velocity = new Vector2(wallJumpDirection * wallJumpPower.x, wallJumpPower.y);
             animator.SetTrigger("Jump");
 
@@ -137,7 +111,6 @@ public class playerMovement : MonoBehaviour
                 transform.localScale = ls;
             }
             Invoke(nameof(CancelWallJump), wallJumpTime + 0.1f);
-            
         }
     }
 
@@ -164,6 +137,8 @@ public class playerMovement : MonoBehaviour
         if(!isGrounded & WallCheck() & horizontalMovement != 0)
         {
             isWallSliding = true;
+            jumpsRemain = jumpAmt;
+            CancelWallJump();
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -wallSlideSpeed));
         }
         else
@@ -210,10 +185,13 @@ public class playerMovement : MonoBehaviour
         {
             jumpsRemain = jumpAmt;
             isGrounded = true;
+            CancelWallJump();
+            animator.SetBool("isGrounded", isGrounded);
         }
         else
         {
             isGrounded = false;
+            animator.SetBool("isGrounded", isGrounded);
         }
     }
 
@@ -223,5 +201,13 @@ public class playerMovement : MonoBehaviour
         Gizmos.DrawCube(groundCheckPos.position, groundCheckSize);
         Gizmos.color = Color.green;
         Gizmos.DrawCube(wallCheckPos.position, wallCheckSize);
+    }
+
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("Wall"))
+        {
+            CancelWallJump();
+        }
     }
 }

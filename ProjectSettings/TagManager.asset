@@ -14,6 +14,9 @@ TagManager:
   - Powerup Two
   - Health Item
   - ProjectileFriendly
+  - Platform
+  - Spike
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -50,4 +53,22 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: New Layer 1
+    uniqueID: 3208065791
+    locked: 0
+  - name: New Layer 2
+    uniqueID: 4171383365
+    locked: 0
+  - name: New Layer 3
+    uniqueID: 649654239
+    locked: 0
+  - name: New Layer 4
+    uniqueID: 4190696953
+    locked: 0
+  - name: New Layer 5
+    uniqueID: 3834397917
+    locked: 0
+  - name: Main
+    uniqueID: 591548287
     locked: 0
