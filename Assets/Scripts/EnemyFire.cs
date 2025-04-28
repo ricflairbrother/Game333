@@ -21,7 +21,7 @@ public class EnemyFire : MonoBehaviour
     {
         float distance = Vector2.Distance(transform.position, player.transform.position);
 
-        if(distance < 12)
+        if(distance < 15)
         {
             timer += Time.deltaTime;
             animator.SetTrigger("Throw");
@@ -32,7 +32,7 @@ public class EnemyFire : MonoBehaviour
                 animator.SetTrigger("NotThrow");
             }
         }
-        if (distance > 12)
+        if (distance > 15)
         {
             animator.SetTrigger("NotThrow");
         }

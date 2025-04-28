@@ -12,7 +12,7 @@ public class PlayerShoot : MonoBehaviour
     public bool reloading;
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) && canShoot == true)
+        if(Input.GetMouseButtonDown(0) && canShoot == true && ammoCount > 0)
         {
             Shoot();
         }
@@ -21,6 +21,8 @@ public class PlayerShoot : MonoBehaviour
     void Shoot()
     {
         canShoot = false;
+
+        ammoCount -= 1;
 
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -33,11 +35,20 @@ public class PlayerShoot : MonoBehaviour
         Destroy(ninjaStar, 1f);
 
         StartCoroutine(ShootCooldown());
+
+        if(ammoCount <= 0)
+        {
+            Reload();
+        }
     }
 
     void Reload()
     {
-        StartCoroutine(ReloadingCoroutine());
+        if(!reloading)
+        {
+            reloading = true;
+            StartCoroutine(ReloadingCoroutine());
+        }
     }
 
     private IEnumerator ShootCooldown()
