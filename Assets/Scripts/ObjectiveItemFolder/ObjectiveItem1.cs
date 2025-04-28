@@ -3,9 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectiveItem : MonoBehaviour, IItem
+public class ObjectiveItem1 : MonoBehaviour, IItem
 {
     public bool itemUsed = false;
+
+    void Start()
+    {
+        if(SceneTransition.objective1Collected == true)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public void Collect()
     {
@@ -13,6 +21,7 @@ public class ObjectiveItem : MonoBehaviour, IItem
         {
             return;
         }
+        SceneTransition.objective1Collected = true;
         Destroy(gameObject);
         itemUsed = true;
         SceneTransition.numOfObjectives += 1;
