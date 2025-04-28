@@ -6,4 +6,5 @@ public class SceneTransition : MonoBehaviour
 {
     public static int checkpointNum;
     public static int numOfLives;
+    public static int numOfObjectives;
 }
