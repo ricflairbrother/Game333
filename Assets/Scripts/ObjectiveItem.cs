@@ -16,6 +16,5 @@ public class ObjectiveItem : MonoBehaviour, IItem
         Destroy(gameObject);
         itemUsed = true;
         SceneTransition.numOfObjectives += 1;
-        Debug.Log("Collected");
     }
 }

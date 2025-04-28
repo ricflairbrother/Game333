@@ -26,7 +26,6 @@ public class RatEnemy : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(Vector2.Distance(transform.position, pointB.position));
         if(Vector2.Distance(transform.position, pointA.position) < 1f)
         {
             targetPos = pointB.position;
